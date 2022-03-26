@@ -1,0 +1,359 @@
+<h1>Nanobodies</h1>
+<mat-divider></mat-divider>
+<mat-drawer-container>
+  <mat-drawer mode="side" opened>
+    <section>
+      <form>
+        <ul>
+          <li>
+            <h2><mat-icon>album</mat-icon> Tm</h2>
+            <label>
+              nanoDSF <br /><br /><br />
+              <lib-ngx-mat-range-slider
+                [min]="0"
+                [max]="100"
+                (output)="onChangeTmRange($event, 'nanoDSF')"
+              >
+              </lib-ngx-mat-range-slider>
+            </label>
+
+            <br /><br />
+            <label>
+              DSF (SYPRO)<br /><br /><br />
+              <lib-ngx-mat-range-slider
+                [min]="0"
+                [max]="100"
+                (output)="onChangeTmRange($event, 'dsf')"
+              >
+              </lib-ngx-mat-range-slider>
+            </label>
+
+            <br /><br />
+            <label>
+              DSC<br /><br /><br />
+              <lib-ngx-mat-range-slider
+                [min]="0"
+                [max]="100"
+                (output)="onChangeTmRange($event, 'dsc')"
+              >
+              </lib-ngx-mat-range-slider>
+            </label>
+
+            <br /><br />
+
+            <label>
+              Circular dichroism<br /><br /><br />
+              <lib-ngx-mat-range-slider
+                [min]="0"
+                [max]="100"
+                (output)="onChangeTmRange($event, 'circularDichroism')"
+              >
+              </lib-ngx-mat-range-slider>
+            </label>
+            <br /><br />
+            <label>
+              Refolding (%)<br /><br /><br />
+              <lib-ngx-mat-range-slider
+                [min]="0"
+                [max]="100"
+                (output)="onChangeTmRange($event, 'refolding')"
+              >
+              </lib-ngx-mat-range-slider>
+            </label>
+            <br />
+            <br />
+            <mat-divider></mat-divider>
+            <br />
+          </li>
+          <li>
+            <h2><mat-icon>album</mat-icon> Binding</h2>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Antigen name</mat-label>
+              <mat-chip-list #chipList aria-label="Select Antigen">
+                <mat-chip *ngFor="let antigen of selectedAntigens">
+                  {{ antigen }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+                <input
+                  #antigenNameInput
+                  matInput
+                  [formControl]="antigenNameControl"
+                  [matAutocomplete]="auto1"
+                  [matChipInputFor]="chipList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addAntigen($event)"
+                  placeholder="Select antigen..."
+                />
+              </mat-chip-list>
+              <mat-autocomplete #auto1="matAutocomplete">
+                <mat-option
+                  *ngFor="let antigen of antigenNames"
+                  [value]="antigen"
+                >
+                  {{ antigen }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            <br /><br />
+            <mat-form-field appearance="fill">
+              <mat-label>Antigen Type</mat-label>
+              <input
+                #antigenTypeInput
+                matInput
+                [formControl]="antigenTypeControl"
+                [matAutocomplete]="auto2"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addAntigen($event)"
+                placeholder="Select antigen type..."
+              />
+              <mat-autocomplete #auto2="matAutocomplete">
+                <mat-option *ngFor="let type of antigenTypes" [value]="type">
+                  {{ type }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            <br />
+            <label>
+              Affinity<br /><br /><br />
+              <lib-ngx-mat-range-slider
+                [min]="0"
+                [max]="100"
+                (output)="onChangeTmRange($event, 'kd')"
+              >
+              </lib-ngx-mat-range-slider>
+            </label>
+            <br /><br />
+            <mat-divider></mat-divider>
+            <br />
+          </li>
+          <li>
+            <h2><mat-icon>album</mat-icon> Yield (mg/L)</h2>
+            <label>
+              Periplasm <br /><br /><br />
+              <lib-ngx-mat-range-slider
+                [min]="0"
+                [max]="100"
+                (output)="onChangeTmRange($event, 'kd')"
+              >
+              </lib-ngx-mat-range-slider>
+            </label>
+
+            <br />
+            <br />
+
+            <label>
+              Cytoplasm <br /><br /><br />
+              <lib-ngx-mat-range-slider
+                [min]="0"
+                [max]="100"
+                (output)="onChangeTmRange($event, 'kd')"
+              >
+              </lib-ngx-mat-range-slider>
+            </label>
+
+            <br />
+            <br />
+
+            <label>
+              Other <br /><br /><br />
+              <lib-ngx-mat-range-slider
+                [min]="0"
+                [max]="100"
+                (output)="onChangeTmRange($event, 'kd')"
+              >
+              </lib-ngx-mat-range-slider>
+            </label>
+            <br />
+            <br />
+            <mat-divider></mat-divider>
+            <br />
+            <br />
+          </li>
+          <li>
+            <h2><mat-icon>album</mat-icon> Origin</h2>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Source</mat-label>
+              <input
+                #sourceInput
+                matInput
+                [formControl]="sourceControl"
+                [matAutocomplete]="auto3"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addAntigen($event)"
+                placeholder="Select source..."
+              />
+              <mat-autocomplete #auto3="matAutocomplete">
+                <mat-option *ngFor="let source of sources" [value]="source">
+                  {{ source }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            <br /><br />
+            <mat-form-field appearance="fill">
+              <mat-label>Type</mat-label>
+              <input
+                #typeInput
+                matInput
+                [formControl]="typeControl"
+                [matAutocomplete]="auto4"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addAntigen($event)"
+                placeholder="Select type..."
+              />
+              <mat-autocomplete #auto4="matAutocomplete">
+                <mat-option *ngFor="let type of originTypes" [value]="type">
+                  {{ type }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            <br />
+            <br />
+            <mat-form-field appearance="fill">
+              <mat-label>Obtaining Method</mat-label>
+              <input
+                #obtainingMethodInput
+                matInput
+                [formControl]="obtainingMethodControl"
+                [matAutocomplete]="auto5"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addAntigen($event)"
+                placeholder="Select method..."
+              />
+              <mat-autocomplete #auto5="matAutocomplete">
+                <mat-option
+                  *ngFor="let method of obtainingMethods"
+                  [value]="method"
+                >
+                  {{ method }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            <br />
+            <br />
+            <mat-divider></mat-divider>
+            <br />
+          </li>
+          <li>
+            <h2><mat-icon>album</mat-icon> Sequence</h2>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Raw</mat-label>
+              <input
+                #productInput
+                matInput
+                [formControl]="sequenceControl"
+                [matAutocomplete]="auto6"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addAntigen($event)"
+                placeholder="Select sequence..."
+              />
+              <mat-autocomplete #auto6="matAutocomplete">
+                <mat-option
+                  *ngFor="let sequence of sequencies"
+                  [value]="sequence"
+                >
+                  {{ sequence }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+            <br /><br />
+          </li>
+        </ul>
+      </form>
+    </section>
+  </mat-drawer>
+  <mat-drawer-content>
+    <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+    <mat-accordion>
+      <mat-expansion-panel hideToggle *ngFor="let nanobody of $data | async">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ nanobody.name }}
+          </mat-panel-title>
+          <mat-panel-description>
+            <a [href]="nanobody.reference.doi">Reference</a>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <section class="info">
+          <table class="mat-elevation-z1">
+            <tr>
+              <th colspan="5"><h3>Tm</h3></th>
+            </tr>
+            <tr>
+              <th>nanoDSF</th>
+              <th>dsf</th>
+              <th>dsc</th>
+              <th>Circular Dichroism</th>
+              <th>Refolding</th>
+            </tr>
+            <tr>
+              <td>{{ nanobody.tm.nanoDSF }}</td>
+              <td>{{ nanobody.tm.dsf }}</td>
+              <td>{{ nanobody.tm.dsc }}</td>
+              <td>{{ nanobody.tm.circularDichroism }}</td>
+              <td>{{ nanobody.tm.refolding }}</td>
+            </tr>
+          </table>
+          <table
+            class="mat-elevation-z1"
+            *ngIf="nanobody.binding.antigens.length > 0"
+          >
+            <tr>
+              <th colspan="3"><h3>Antigens</h3></th>
+            </tr>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Affinity</th>
+            </tr>
+            <tr *ngFor="let antigen of nanobody.binding.antigens">
+              <td>{{ antigen.name }}</td>
+              <td>{{ antigen.type }}</td>
+              <td>{{ antigen.affinity }}</td>
+            </tr>
+          </table>
+          <table class="mat-elevation-z1">
+            <tr>
+              <th colspan="3"><h3>Origin</h3></th>
+            </tr>
+            <tr>
+              <th>Source</th>
+              <th>Type</th>
+              <th>Method</th>
+            </tr>
+            <tr>
+              <td>{{ nanobody.origin.source }}</td>
+              <td>{{ nanobody.origin.type }}</td>
+              <td>{{ nanobody.origin.method }}</td>
+            </tr>
+          </table>
+          <table
+            class="mat-elevation-z1"
+            *ngIf="nanobody.yield.periplasm || nanobody.yield.cytoplasm"
+          >
+            <tr>
+              <th colspan="3"><h3>Yield</h3></th>
+            </tr>
+            <tr>
+              <th>Periplasm</th>
+              <th>Cytoplasm</th>
+            </tr>
+            <tr>
+              <td>{{ nanobody.yield.periplasm }}</td>
+              <td>{{ nanobody.yield.cytoplasm }}</td>
+            </tr>
+          </table>
+        </section>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </mat-drawer-content>
+</mat-drawer-container>

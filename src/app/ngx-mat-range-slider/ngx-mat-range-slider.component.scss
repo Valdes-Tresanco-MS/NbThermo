@@ -1,0 +1,119 @@
+
+
+.slider-over {
+  position: absolute !important;
+}
+
+mat-slider {
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 90% !important;
+}
+
+$range-intersection-color: #66bb6a;
+@if variable-exists(range-silder-color) {
+  $range-intersection-color: $range-silder-color;
+}
+
+$range-outer-color: #bdbdbd;
+@if variable-exists(range-outside-color) {
+  $range-outer-color: $range-outside-color;
+}
+
+ngx-mat-range-slider {
+  height: 60px;
+
+  .mat-slider-thumb-label {
+    transform: rotate(45deg) !important;
+    border-radius: 50% 50% 0 !important;
+  }
+
+  .mat-slider-thumb-label-text {
+    transform: rotate(-45deg) !important;
+    opacity: 1 !important;
+  }
+
+  .mat-slider-thumb {
+    transform: scale(0);
+  }
+
+  .mat-slider-track-wrapper {
+    background: $range-intersection-color;
+  }
+
+  .slider-min-value {
+    .mat-slider-track-fill, .mat-slider-track-fill:focus {
+      background-color: $range-outer-color !important;
+      outline: $range-outer-color;
+      z-index: 99;
+    }
+
+    .mat-slider-track-background, .mat-slider-track-background:focus {
+      display: none;
+    }
+  }
+
+  .slider-max-value {
+    .mat-slider-track-background, .mat-slider-track-background:focus {
+      background-color: $range-outer-color !important;
+      outline: $range-outer-color;
+      z-index: 99;
+    }
+
+    .mat-slider-track-fill, .mat-slider-track-fill:focus {
+      display: none;
+    }
+  }
+
+  .slider-line-cover-wrapper {
+    top: 39px;
+    z-index: -1;
+    display: table;
+
+    .slider-line-cover {
+      background-color: $range-outer-color !important;
+      border-bottom: 1px solid $range-outer-color !important;
+      display: table-cell;
+      width: 50%
+    }
+
+    .slider-line-cover-init {
+      background-color: $range-intersection-color !important;
+      border-bottom: 1px solid $range-intersection-color !important;
+      display: table-cell;
+      width: 50%
+    }
+  }
+
+  div.outer {
+    display: table;
+    border-top: 2px solid red;
+    //border-left: 2px solid red;
+    width: 100%;
+  }
+
+  div.middle:nth-of-type(1) {
+    display: table-row;
+    font-size: 5px;
+  }
+
+  div.middle:nth-of-type(2) {
+    display: table-row;
+    font-size: 10px;
+
+    span {
+      font-size: 10px;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+    }
+  }
+
+  div.inner {
+    display: table-cell;
+    //border-right: 2px solid red;
+    align-content: center;
+    align-items: center;
+    text-align: center;
+  }
+}
+
