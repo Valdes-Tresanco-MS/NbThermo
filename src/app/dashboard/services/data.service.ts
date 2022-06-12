@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { RangeType } from 'ngx-mat-range-slider';
+import { RangeType } from '../../ngx-mat-range-slider/ngx-mat-range-slider.component';
 
 import getData from '../data/database.json';
 import { Database } from '../models/database';

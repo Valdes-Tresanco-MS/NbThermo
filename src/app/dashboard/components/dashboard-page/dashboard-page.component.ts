@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { DataService } from '../../services/data.service';
 import { Nanobody } from '../../models/nanobody';
-import { RangeType } from 'ngx-mat-range-slider';
+import { RangeType } from '../../../ngx-mat-range-slider/ngx-mat-range-slider.component';
 
 type Subset<K> = {
   [attr in keyof K]?: K[attr] extends object ? Subset<K[attr]> : K[attr];

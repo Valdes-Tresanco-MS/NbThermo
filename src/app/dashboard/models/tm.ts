@@ -1,4 +1,4 @@
-import { RangeType } from 'ngx-mat-range-slider';
+import { RangeType } from '../../ngx-mat-range-slider/ngx-mat-range-slider.component';
 
 export interface Tm {
   nanoDSF: Number | RangeType;
