@@ -12,7 +12,7 @@
               <lib-ngx-mat-range-slider
                 [min]="0"
                 [max]="100"
-                (output)="onChangeTmRange($event, 'nanoDSF')"
+                (output)="onChangeRange($event, 'nanoDSF', 'tm')"
               >
               </lib-ngx-mat-range-slider>
             </label>
@@ -23,7 +23,7 @@
               <lib-ngx-mat-range-slider
                 [min]="0"
                 [max]="100"
-                (output)="onChangeTmRange($event, 'dsf')"
+                (output)="onChangeRange($event, 'dsf', 'tm')"
               >
               </lib-ngx-mat-range-slider>
             </label>
@@ -34,7 +34,7 @@
               <lib-ngx-mat-range-slider
                 [min]="0"
                 [max]="100"
-                (output)="onChangeTmRange($event, 'dsc')"
+                (output)="onChangeRange($event, 'dsc', 'tm')"
               >
               </lib-ngx-mat-range-slider>
             </label>
@@ -46,7 +46,7 @@
               <lib-ngx-mat-range-slider
                 [min]="0"
                 [max]="100"
-                (output)="onChangeTmRange($event, 'circularDichroism')"
+                (output)="onChangeRange($event, 'circularDichroism', 'tm')"
               >
               </lib-ngx-mat-range-slider>
             </label>
@@ -56,7 +56,7 @@
               <lib-ngx-mat-range-slider
                 [min]="0"
                 [max]="100"
-                (output)="onChangeTmRange($event, 'refolding')"
+                (output)="onChangeRange($event, 'refolding', 'tm')"
               >
               </lib-ngx-mat-range-slider>
             </label>
@@ -84,8 +84,8 @@
                   [matAutocomplete]="auto1"
                   [matChipInputFor]="chipList"
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  (matChipInputTokenEnd)="addAntigen($event)"
-                  placeholder="Select antigen..."
+                  (matChipInputTokenEnd)="addChip($event, selectedAntigens)"
+                  placeholder="Select name..."
                 />
               </mat-chip-list>
               <mat-autocomplete #auto1="matAutocomplete">
@@ -105,9 +105,6 @@
                 matInput
                 [formControl]="antigenTypeControl"
                 [matAutocomplete]="auto2"
-                [matChipInputFor]="chipList"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                (matChipInputTokenEnd)="addAntigen($event)"
                 placeholder="Select antigen type..."
               />
               <mat-autocomplete #auto2="matAutocomplete">
@@ -122,7 +119,7 @@
               <lib-ngx-mat-range-slider
                 [min]="0"
                 [max]="100"
-                (output)="onChangeTmRange($event, 'kd')"
+                (output)="onChangeBindingRange($event, 'affinity')"
               >
               </lib-ngx-mat-range-slider>
             </label>
@@ -137,7 +134,7 @@
               <lib-ngx-mat-range-slider
                 [min]="0"
                 [max]="100"
-                (output)="onChangeTmRange($event, 'kd')"
+                (output)="onChangeRange($event, 'periplasm', 'yield')"
               >
               </lib-ngx-mat-range-slider>
             </label>
@@ -150,7 +147,7 @@
               <lib-ngx-mat-range-slider
                 [min]="0"
                 [max]="100"
-                (output)="onChangeTmRange($event, 'kd')"
+                (output)="onChangeRange($event, 'cytoplasm', 'yield')"
               >
               </lib-ngx-mat-range-slider>
             </label>
@@ -163,7 +160,7 @@
               <lib-ngx-mat-range-slider
                 [min]="0"
                 [max]="100"
-                (output)="onChangeTmRange($event, 'kd')"
+                (output)="onChangeRange($event, 'other', 'yield')"
               >
               </lib-ngx-mat-range-slider>
             </label>
@@ -183,9 +180,6 @@
                 matInput
                 [formControl]="sourceControl"
                 [matAutocomplete]="auto3"
-                [matChipInputFor]="chipList"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                (matChipInputTokenEnd)="addAntigen($event)"
                 placeholder="Select source..."
               />
               <mat-autocomplete #auto3="matAutocomplete">
@@ -202,9 +196,6 @@
                 matInput
                 [formControl]="typeControl"
                 [matAutocomplete]="auto4"
-                [matChipInputFor]="chipList"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                (matChipInputTokenEnd)="addAntigen($event)"
                 placeholder="Select type..."
               />
               <mat-autocomplete #auto4="matAutocomplete">
@@ -222,9 +213,6 @@
                 matInput
                 [formControl]="obtainingMethodControl"
                 [matAutocomplete]="auto5"
-                [matChipInputFor]="chipList"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                (matChipInputTokenEnd)="addAntigen($event)"
                 placeholder="Select method..."
               />
               <mat-autocomplete #auto5="matAutocomplete">
@@ -247,13 +235,10 @@
             <mat-form-field appearance="fill">
               <mat-label>Raw</mat-label>
               <input
-                #productInput
+                #sequenceInput
                 matInput
                 [formControl]="sequenceControl"
                 [matAutocomplete]="auto6"
-                [matChipInputFor]="chipList"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                (matChipInputTokenEnd)="addAntigen($event)"
                 placeholder="Select sequence..."
               />
               <mat-autocomplete #auto6="matAutocomplete">
@@ -280,20 +265,23 @@
             {{ nanobody.name }}
           </mat-panel-title>
           <mat-panel-description>
-            <a [href]="nanobody.reference.doi">Reference</a>
+            <a [href]="nanobody.reference.doi" target="_blank"
+              ><mat-icon>open_in_new</mat-icon></a
+            >
           </mat-panel-description>
         </mat-expansion-panel-header>
         <section class="info">
           <table class="mat-elevation-z1">
             <tr>
-              <th colspan="5"><h3>Tm</h3></th>
+              <th colspan="6"><h3>Tm</h3></th>
             </tr>
             <tr>
               <th>nanoDSF</th>
-              <th>dsf</th>
-              <th>dsc</th>
+              <th>DSF</th>
+              <th>DSC</th>
               <th>Circular Dichroism</th>
               <th>Refolding</th>
+              <th>Other</th>
             </tr>
             <tr>
               <td>{{ nanobody.tm.nanoDSF }}</td>
@@ -301,6 +289,7 @@
               <td>{{ nanobody.tm.dsc }}</td>
               <td>{{ nanobody.tm.circularDichroism }}</td>
               <td>{{ nanobody.tm.refolding }}</td>
+              <td>{{ nanobody.tm.other }}</td>
             </tr>
           </table>
           <table
@@ -346,13 +335,85 @@
             <tr>
               <th>Periplasm</th>
               <th>Cytoplasm</th>
+              <th>Other</th>
             </tr>
             <tr>
               <td>{{ nanobody.yield.periplasm }}</td>
               <td>{{ nanobody.yield.cytoplasm }}</td>
+              <td>{{ nanobody.yield.other }}</td>
+            </tr>
+          </table>
+
+          <table
+            class="mat-elevation-z1 full-width"
+            *ngIf="nanobody.sequence.raw"
+          >
+            <tr>
+              <th><h3>Sequence - Raw</h3></th>
+            </tr>
+            <tr>
+              <td>{{ nanobody.sequence.raw }}</td>
+            </tr>
+          </table>
+
+          <table class="mat-elevation-z1 full-width">
+            <tr>
+              <th><h3>Sequence - Aho</h3></th>
+            </tr>
+            <tr>
+              <td>{{ nanobody.sequence.aho }}</td>
+            </tr>
+          </table>
+
+          <table class="mat-elevation-z1 full-width">
+            <tr>
+              <th colspan="2"><h3>Sequence - Frameworks</h3></th>
+            </tr>
+            <tr>
+              <td>Framework 1</td>
+              <td>{{ nanobody.sequence.frameworks[0] }}</td>
+            </tr>
+            <tr>
+              <td>Framework 2</td>
+              <td>{{ nanobody.sequence.frameworks[1] }}</td>
+            </tr>
+            <tr>
+              <td>Framework 3</td>
+              <td>{{ nanobody.sequence.frameworks[2] }}</td>
+            </tr>
+            <tr>
+              <td>Framework 4</td>
+              <td>{{ nanobody.sequence.frameworks[3] }}</td>
+            </tr>
+          </table>
+
+          <table class="mat-elevation-z1 full-width">
+            <tr>
+              <th colspan="3"><h3>Sequence - CDRs</h3></th>
+            </tr>
+            <tr>
+              <th>Number</th>
+              <th>Value</th>
+              <th>Length</th>
+            </tr>
+            <tr>
+              <td>CDR 1</td>
+              <td>{{ nanobody.sequence.cdrs[0].value }}</td>
+              <td>{{ nanobody.sequence.cdrs[0].length }}</td>
+            </tr>
+            <tr>
+              <td>CDR 2</td>
+              <td>{{ nanobody.sequence.cdrs[1].value }}</td>
+              <td>{{ nanobody.sequence.cdrs[1].length }}</td>
+            </tr>
+            <tr>
+              <td>CDR 3</td>
+              <td>{{ nanobody.sequence.cdrs[2].value }}</td>
+              <td>{{ nanobody.sequence.cdrs[2].length }}</td>
             </tr>
           </table>
         </section>
+        <section></section>
       </mat-expansion-panel>
     </mat-accordion>
   </mat-drawer-content>

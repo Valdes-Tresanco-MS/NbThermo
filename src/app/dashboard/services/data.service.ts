@@ -28,20 +28,33 @@ export class DataService {
   constructor() {}
 
   compare(item: any, filter: any, key = ''): boolean {
-    if (!filter) {
-      return false;
+    if (!filter || (filter.min === 0 && filter.max === 100)) {
+      return true;
+    } else if (Array.isArray(item) && item.length > 0) {
+      return item.every((innerItem, innerIndex) => {
+        return this.compare(innerItem, filter[innerIndex], key);
+      });
+    } else if (!!item && typeof item === 'object') {
+      return Object.keys(item).every((innerkey) => {
+        return this.compare(item[innerkey], filter[innerkey], innerkey);
+      });
     } else if (isInstanceOfRangeType(filter)) {
-      if (!!item) {
-        return item >= filter.min && item <= filter.max;
-      }
-
+      return this.compareRange(item, filter);
+    } else {
       return false;
     }
-
-    return Object.keys(item).some((key) => {
-      return this.compare(item[key], filter[key], key);
-    });
   }
+
+  compareRange(item: any, filter: any) {
+    if (!!item) {
+      return item >= (filter.min || 0) && item <= (filter.max || 100);
+    } else if (filter.min === 0 && filter.max === 100) {
+      return true;
+    }
+    return false;
+  }
+
+  isDefaultRange() {}
 
   filterData(filter: Subset<Nanobody>) {
     console.log(filter);
@@ -49,7 +62,7 @@ export class DataService {
     const result = this.database.data.filter((item: Nanobody) =>
       this.compare(item, filter)
     );
-    console.log(result);
+    console.log(result.length);
     this.$data.next(result);
   }
 

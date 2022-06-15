@@ -44,6 +44,8 @@ table {
 
   td {
     text-align: center;
+    overflow-wrap: anywhere;
+    padding: 0 16px;
   }
 }
 
@@ -78,6 +80,10 @@ mat-panel-description {
 .info {
   display: flex;
   flex-wrap: wrap;
+}
+
+.full-width {
+  width: 100%;
 }
 
 ::ng-deep {

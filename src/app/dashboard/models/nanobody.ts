@@ -3,14 +3,15 @@ import { Origin } from './origin';
 import { Reference } from './reference';
 import { Tm } from './tm';
 import { Yield } from './yield';
+import { Sequence } from './sequence';
 
 export interface Nanobody {
-  id: String;
+  id: string;
   binding: Binding;
-  name: String;
+  name: string;
   origin: Origin;
   reference: Reference;
-  sequence: String;
+  sequence: Sequence;
   tm: Tm;
   yield: Yield;
 }

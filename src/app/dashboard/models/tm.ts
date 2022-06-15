@@ -6,4 +6,5 @@ export interface Tm {
   dsc: Number | RangeType;
   circularDichroism: Number | RangeType;
   refolding: Number | RangeType;
+  other: Number | RangeType;
 }

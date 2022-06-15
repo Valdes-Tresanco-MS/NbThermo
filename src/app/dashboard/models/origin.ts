@@ -1,5 +1,5 @@
 export interface Origin {
-  source: String;
-  type: String;
-  method: String;
+  source: string;
+  type: string;
+  method: string;
 }

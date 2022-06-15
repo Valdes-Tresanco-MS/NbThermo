@@ -13,6 +13,7 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { DataService } from '../../services/data.service';
 import { Nanobody } from '../../models/nanobody';
 import { RangeType } from '../../../ngx-mat-range-slider/ngx-mat-range-slider.component';
+import * as THREE from 'three';
 
 type Subset<K> = {
   [attr in keyof K]?: K[attr] extends object ? Subset<K[attr]> : K[attr];
@@ -62,13 +63,23 @@ export class DashboardPageComponent implements OnInit {
     this.obtainingMethods = this.dataService.getOriginKeys('method');
   }
 
-  onChangeTmRange(range: RangeType, key: string) {
-    const { tm } = this.filterObject;
+  onChangeRange(range: RangeType, key: string, parent: keyof Nanobody) {
     this.filterObject = {
       ...this.filterObject,
-      tm: {
-        ...tm,
+      [parent]: {
+        ...(this.filterObject[parent] as any),
         [key]: range,
+      },
+    };
+    this._filter(this.filterObject);
+  }
+
+  onChangeBindingRange(range: RangeType, key: string) {
+    this.filterObject = {
+      ...this.filterObject,
+      binding: {
+        ...this.filterObject.binding,
+        antigens: [{ [key]: range }],
       },
     };
     this._filter(this.filterObject);
@@ -78,12 +89,12 @@ export class DashboardPageComponent implements OnInit {
     this.dataService.filterData(filter);
   }
 
-  addAntigen(event: MatChipInputEvent): void {
+  addChip(event: MatChipInputEvent, target: string[]): void {
     console.log(event);
-    // const value = (event.value || '').trim();
-    // if (value) {
-    //   this.selectedAntigens.push(value);
-    // }
-    // event.chipInput!.clear();
+    const value = (event.value || '').trim();
+    if (value) {
+      target.push(value);
+    }
+    //event.chipInput!.clear();
   }
 }

@@ -11,22 +11,39 @@ const mapData = (rawData: any[]) => {
       },
       Tm: {
         nanoDSF: { value: nanoDSF },
-        'DSF (SYPRO)': { values: dsf },
+        'DSF (SYPRO)': { value: dsf },
         'Circular dichroism': { value: circularDichroism },
         'Refolding (%)': { value: refolding },
         DSC: { value: dsc },
+        Other: { value: other },
       },
       Binding,
       'Yield (mg/L)': {
         Periplasm: { value: periplasm },
         Cytoplasm: { value: cytoplasm },
+        Other: { value: otherYield },
       },
       Origin: {
         Source: { value: source },
         Type: { value: type },
         'Obtaining method': { value: method },
       },
-      Sequence: { raw: sequence },
+      Sequence: {
+        Raw: { value: raw },
+        Aho: { value: aho },
+        CDR1: { value: cdr1, Length: length1 },
+        CDR2: { value: cdr2, Length: length2 },
+        CDR3: { value: cdr3, Length: length3 },
+        Framework1: { value: framework1 },
+        Framework2: { Values: framework2 },
+        Framework3: { value: framework3 },
+        Framework4: { value: framework4 },
+      },
+      Structure: {
+        PDB: { value: pdb },
+        Model: { value: model },
+        'Related PDB': { value: relatedPDB },
+      },
     } = i;
 
     const antigens = [];
@@ -41,11 +58,21 @@ const mapData = (rawData: any[]) => {
       id,
       name,
       reference: { doi, date },
-      tm: { nanoDSF, dsc, dsf, circularDichroism, refolding },
+      tm: { nanoDSF, dsc, dsf, circularDichroism, refolding, other },
       binding: { antigens },
-      yield: { periplasm, cytoplasm },
+      yield: { periplasm, cytoplasm, other: otherYield },
       origin: { source, type, method },
-      sequence,
+      sequence: {
+        raw,
+        aho,
+        frameworks: [framework1, framework2, framework3, framework4],
+        cdrs: [
+          { value: cdr1, length: length1 },
+          { value: cdr2, length: length2 },
+          { value: cdr3, length: length3 },
+        ],
+      },
+      structure: { pdb, model, relatedPDB },
     } as Nanobody;
   });
   return { data } as Database;
