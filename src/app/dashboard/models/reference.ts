@@ -1,4 +1,4 @@
 export interface Reference {
-  doi: string;
+  doi: string | string[];
   date: Date;
 }

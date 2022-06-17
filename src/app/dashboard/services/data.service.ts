@@ -8,6 +8,7 @@ import { Database } from '../models/database';
 import { Nanobody } from '../models/nanobody';
 import { Antigen } from '../models/antigen';
 import { Origin } from '../models/origin';
+import { Tm } from '../models/tm';
 import { mapData } from './data.mapper';
 
 type Subset<K> = {
@@ -31,13 +32,20 @@ export class DataService {
     if (!filter || (filter.min === 0 && filter.max === 100)) {
       return true;
     } else if (Array.isArray(item) && item.length > 0) {
-      return item.every((innerItem, innerIndex) => {
-        return this.compare(innerItem, filter[innerIndex], key);
+      return item.every((innerItem) => {
+        return Array.isArray(filter)
+          ? filter.every((innerFilter: any) =>
+              this.compare(innerItem, innerFilter, key)
+            )
+          : this.compare(innerItem, filter, key);
       });
     } else if (!!item && typeof item === 'object') {
       return Object.keys(item).every((innerkey) => {
         return this.compare(item[innerkey], filter[innerkey], innerkey);
       });
+    } else if (typeof filter === 'string') {
+      console.log(item === filter);
+      return item === filter;
     } else if (isInstanceOfRangeType(filter)) {
       return this.compareRange(item, filter);
     } else {
@@ -85,5 +93,13 @@ export class DataService {
   getData() {
     this.database = mapData(getData);
     this.$data.next(this.database.data);
+  }
+
+  getTempratures() {
+    return this.database.data
+      .flatMap((item: Nanobody) => {
+        return Object.keys(item.tm).map((k) => item.tm[k as keyof Tm]);
+      })
+      .filter((i) => i);
   }
 }

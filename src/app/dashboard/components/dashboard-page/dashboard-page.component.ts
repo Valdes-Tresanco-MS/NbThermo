@@ -7,13 +7,13 @@ import {
 } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { FormControl } from '@angular/forms';
-import { MatDrawerContent } from '@angular/material/sidenav';
 import { Observable } from 'rxjs';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { DataService } from '../../services/data.service';
 import { Nanobody } from '../../models/nanobody';
 import { RangeType } from '../../../ngx-mat-range-slider/ngx-mat-range-slider.component';
-import * as THREE from 'three';
+import { Histogram } from '../../helpers/histogram';
+import { CdkVirtualForOf } from '@angular/cdk/scrolling';
 
 type Subset<K> = {
   [attr in keyof K]?: K[attr] extends object ? Subset<K[attr]> : K[attr];
@@ -25,7 +25,14 @@ type Subset<K> = {
   styleUrls: ['./dashboard-page.component.scss'],
 })
 export class DashboardPageComponent implements OnInit {
-  filterObject: Subset<Nanobody> = {};
+  @ViewChild('antigenNameInput')
+  antigenNameInput!: ElementRef<HTMLInputElement>;
+
+  @ViewChild('chart')
+  chartElement!: ElementRef<HTMLDivElement>;
+  svgElement: any;
+
+  filterObject: any = {};
 
   antigenNames: string[] = [];
   antigenTypes: string[] = [];
@@ -63,6 +70,16 @@ export class DashboardPageComponent implements OnInit {
     this.obtainingMethods = this.dataService.getOriginKeys('method');
   }
 
+  buildChart(nanobody: Nanobody) {
+    const nativeElement = this.chartElement.nativeElement;
+    this.svgElement = Histogram(
+      this.dataService.getTempratures(),
+      nativeElement.clientWidth,
+      nanobody.tm
+    );
+    this.renderer.appendChild(nativeElement, this.svgElement);
+  }
+
   onChangeRange(range: RangeType, key: string, parent: keyof Nanobody) {
     this.filterObject = {
       ...this.filterObject,
@@ -96,5 +113,34 @@ export class DashboardPageComponent implements OnInit {
       target.push(value);
     }
     //event.chipInput!.clear();
+  }
+
+  selectAntigen(antigen: string) {
+    this.selectedAntigens.push(antigen);
+    this.antigenNameControl.setValue(null);
+    this.antigenNameInput.nativeElement.value = '';
+    this.antigenNameInput.nativeElement.blur();
+
+    const {
+      binding,
+      binding: { antigens },
+    } = this.filterObject;
+
+    this.filterObject = {
+      ...this.filterObject,
+      binding: {
+        ...binding,
+        antigens: [...antigens, { name: antigen }],
+      },
+    };
+    this._filter(this.filterObject);
+  }
+
+  removeAntigen(antigen: string): void {
+    const index = this.selectedAntigens.indexOf(antigen);
+
+    if (index >= 0) {
+      this.selectedAntigens.splice(index, 1);
+    }
   }
 }

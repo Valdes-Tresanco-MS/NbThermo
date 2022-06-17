@@ -64,12 +64,17 @@ const mapData = (rawData: any[]) => {
       origin: { source, type, method },
       sequence: {
         raw,
-        aho,
-        frameworks: [framework1, framework2, framework3, framework4],
+        aho: aho?.replace(/-/g, ''),
+        frameworks: [
+          framework1?.replace(/-/g, ''),
+          framework2?.replace(/-/g, ''),
+          framework3?.replace(/-/g, ''),
+          framework4?.replace(/-/g, ''),
+        ],
         cdrs: [
-          { value: cdr1, length: length1 },
-          { value: cdr2, length: length2 },
-          { value: cdr3, length: length3 },
+          { value: cdr1?.replace(/-/g, ''), length: length1 },
+          { value: cdr2?.replace(/-/g, ''), length: length2 },
+          { value: cdr3?.replace(/-/g, ''), length: length3 },
         ],
       },
       structure: { pdb, model, relatedPDB },

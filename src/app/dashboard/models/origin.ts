@@ -1,5 +1,5 @@
 export interface Origin {
-  source: string;
-  type: string;
-  method: string;
+  source: string | string[];
+  type: string | string[];
+  method: string | string[];
 }

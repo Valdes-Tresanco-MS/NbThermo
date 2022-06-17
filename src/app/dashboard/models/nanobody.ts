@@ -14,4 +14,5 @@ export interface Nanobody {
   sequence: Sequence;
   tm: Tm;
   yield: Yield;
+  isOpen?: boolean;
 }

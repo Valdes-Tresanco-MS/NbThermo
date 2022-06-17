@@ -1,8 +1,8 @@
 import { RangeType } from '../../ngx-mat-range-slider/ngx-mat-range-slider.component';
 
 export interface Antigen {
-  name: string;
-  type: string;
+  name: string | string[];
+  type: string | string[];
   affinity: Number | RangeType;
-  notes: string;
+  notes: string | string[];
 }
