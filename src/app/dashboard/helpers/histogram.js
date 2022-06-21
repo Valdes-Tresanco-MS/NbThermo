@@ -92,7 +92,7 @@ export function Histogram(data, _width, _markers) {
       svg
         .append("text")
         .attr("x", x(_markers[k] + 1))
-        .attr("y", y(50 * index))
+        .attr("y", y(20 * (index + 1)))
         .text(`${k}: ${_markers[k]}`)
         .style("font-size", "15px");
 

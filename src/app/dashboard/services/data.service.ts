@@ -26,43 +26,50 @@ export class DataService {
   private database: Database = { data: [] };
   $data: BehaviorSubject<Nanobody[]> = new BehaviorSubject<Nanobody[]>([]);
 
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   compare(item: any, filter: any, key = ''): boolean {
-    if (!filter || (filter.min === 0 && filter.max === 100)) {
+    if (!filter) {
       return true;
-    } else if (Array.isArray(item) && item.length > 0) {
-      return item.every((innerItem) => {
-        return Array.isArray(filter)
-          ? filter.every((innerFilter: any) =>
-              this.compare(innerItem, innerFilter, key)
-            )
-          : this.compare(innerItem, filter, key);
-      });
+    } else if (Array.isArray(item)) {
+      return this.compareItemArray(item, filter, key);
+    } else if (typeof filter === 'string') {
+      return item === filter;
+    } else if (isInstanceOfRangeType(filter)) {
+      return this.compareRange(item, filter);
+    } else if (Array.isArray(filter)) {
+      return filter.some((innerFilter: any) =>
+        this.compare(item, innerFilter, key)
+      );
     } else if (!!item && typeof item === 'object') {
       return Object.keys(item).every((innerkey) => {
         return this.compare(item[innerkey], filter[innerkey], innerkey);
       });
-    } else if (typeof filter === 'string') {
-      console.log(item === filter);
-      return item === filter;
-    } else if (isInstanceOfRangeType(filter)) {
-      return this.compareRange(item, filter);
     } else {
       return false;
     }
   }
 
+  compareItemArray(item: any, filter: any, key: any) {
+    return item.length > 0
+      ? item.every((innerItem: any) => {
+          return Array.isArray(filter)
+            ? filter.some((innerFilter: any) =>
+                this.compare(innerItem, innerFilter, key)
+              )
+            : this.compare(innerItem, filter, key);
+        })
+      : false;
+  }
+
   compareRange(item: any, filter: any) {
-    if (!!item) {
-      return item >= (filter.min || 0) && item <= (filter.max || 100);
-    } else if (filter.min === 0 && filter.max === 100) {
+    if (filter.min === 0 && filter.max === 100) {
       return true;
+    } else if (!!item) {
+      return item >= (filter.min || 0) && item <= (filter.max || 100);
     }
     return false;
   }
-
-  isDefaultRange() {}
 
   filterData(filter: Subset<Nanobody>) {
     console.log(filter);
@@ -93,6 +100,13 @@ export class DataService {
   getData() {
     this.database = mapData(getData);
     this.$data.next(this.database.data);
+  }
+
+  getPDB(file: string) {
+    return this.http.get(file, {
+      headers: { 'Content-type': 'application/x-pdb' },
+      responseType: 'text',
+    });
   }
 
   getTempratures() {

@@ -64,7 +64,7 @@ const mapData = (rawData: any[]) => {
       origin: { source, type, method },
       sequence: {
         raw,
-        aho: aho?.replace(/-/g, ''),
+        aho: aho,
         frameworks: [
           framework1?.replace(/-/g, ''),
           framework2?.replace(/-/g, ''),

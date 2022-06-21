@@ -4,6 +4,7 @@ import { Reference } from './reference';
 import { Tm } from './tm';
 import { Yield } from './yield';
 import { Sequence } from './sequence';
+import { Structure } from './structure';
 
 export interface Nanobody {
   id: string;
@@ -15,4 +16,5 @@ export interface Nanobody {
   tm: Tm;
   yield: Yield;
   isOpen?: boolean;
+  structure: Structure;
 }

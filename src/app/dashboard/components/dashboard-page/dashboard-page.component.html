@@ -7,63 +7,33 @@
         <ul>
           <li>
             <h2><mat-icon>album</mat-icon> Tm</h2>
-            <label>
-              nanoDSF <br /><br /><br />
-              <lib-ngx-mat-range-slider
-                [min]="0"
-                [max]="100"
-                (output)="onChangeRange($event, 'nanoDSF', 'tm')"
-              >
-              </lib-ngx-mat-range-slider>
-            </label>
+            <mat-form-field appearance="fill">
+              <mat-label>Select a measure</mat-label>
+              <mat-select name="tm" [(ngModel)]="selectedTm">
+                <mat-option
+                  *ngFor="let option of tmOptions"
+                  [value]="option.value"
+                >
+                  {{ option.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
 
-            <br /><br />
-            <label>
-              DSF (SYPRO)<br /><br /><br />
-              <lib-ngx-mat-range-slider
-                [min]="0"
-                [max]="100"
-                (output)="onChangeRange($event, 'dsf', 'tm')"
-              >
-              </lib-ngx-mat-range-slider>
-            </label>
-
-            <br /><br />
-            <label>
-              DSC<br /><br /><br />
-              <lib-ngx-mat-range-slider
-                [min]="0"
-                [max]="100"
-                (output)="onChangeRange($event, 'dsc', 'tm')"
-              >
-              </lib-ngx-mat-range-slider>
-            </label>
-
-            <br /><br />
-
-            <label>
-              Circular dichroism<br /><br /><br />
-              <lib-ngx-mat-range-slider
-                [min]="0"
-                [max]="100"
-                (output)="onChangeRange($event, 'circularDichroism', 'tm')"
-              >
-              </lib-ngx-mat-range-slider>
-            </label>
-            <br /><br />
-            <label>
-              Refolding (%)<br /><br /><br />
-              <lib-ngx-mat-range-slider
-                [min]="0"
-                [max]="100"
-                (output)="onChangeRange($event, 'refolding', 'tm')"
-              >
-              </lib-ngx-mat-range-slider>
-            </label>
             <br />
-            <br />
-            <mat-divider></mat-divider>
-            <br />
+            <label *ngIf="selectedTm">
+              <br />
+              <lib-ngx-mat-range-slider
+                [min]="0"
+                [max]="100"
+                (output)="onChangeRange($event, selectedTm, 'tm')"
+              >
+              </lib-ngx-mat-range-slider>
+              <br />
+              <br />
+            </label>
+
+            <mat-divider *ngIf="selectedTm"></mat-divider>
+            <br *ngIf="selectedTm" />
           </li>
           <li>
             <h2><mat-icon>album</mat-icon> Binding</h2>
@@ -73,7 +43,7 @@
               <mat-chip-list #chipList aria-label="Select Antigen">
                 <mat-chip
                   *ngFor="let antigen of selectedAntigens"
-                  (removed)="removeAntigen(antigen)"
+                  (removed)="removeOption(antigen, selectedAntigens)"
                 >
                   {{ antigen }}
                   <button matChipRemove>
@@ -95,7 +65,14 @@
               </mat-chip-list>
               <mat-autocomplete
                 #auto1="matAutocomplete"
-                (optionSelected)="selectAntigen($event.option.value)"
+                (optionSelected)="
+                  selectOption(
+                    $event.option.value,
+                    selectedAntigens,
+                    antigenNameControl,
+                    antigenTypeInput
+                  )
+                "
               >
                 <mat-option
                   *ngFor="let antigen of antigenNames"
@@ -108,29 +85,46 @@
             <br /><br />
             <mat-form-field appearance="fill">
               <mat-label>Antigen Type</mat-label>
-              <input
-                #antigenTypeInput
-                matInput
-                [formControl]="antigenTypeControl"
-                [matAutocomplete]="auto2"
-                placeholder="Select antigen type..."
-              />
-              <mat-autocomplete #auto2="matAutocomplete">
+
+              <mat-chip-list #chipList2 aria-label="Select Antigen Type">
+                <mat-chip
+                  *ngFor="let type of selectedAntigenTypes"
+                  (removed)="removeOption(type, selectedAntigenTypes)"
+                >
+                  {{ type }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+                <br />
+                <br />
+                <input
+                  #antigenTypeInput
+                  matInput
+                  [formControl]="antigenTypeControl"
+                  [matAutocomplete]="auto2"
+                  [matChipInputFor]="chipList2"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addChip($event, selectedAntigenTypes)"
+                  placeholder="Select antigen type..."
+                />
+              </mat-chip-list>
+              <mat-autocomplete
+                #auto2="matAutocomplete"
+                (optionSelected)="
+                  selectOption(
+                    $event.option.value,
+                    selectedAntigenTypes,
+                    antigenTypeControl,
+                    antigenTypeInput
+                  )
+                "
+              >
                 <mat-option *ngFor="let type of antigenTypes" [value]="type">
                   {{ type }}
                 </mat-option>
               </mat-autocomplete>
             </mat-form-field>
-            <br />
-            <label>
-              Affinity<br /><br /><br />
-              <lib-ngx-mat-range-slider
-                [min]="0"
-                [max]="100"
-                (output)="onChangeBindingRange($event, 'affinity')"
-              >
-              </lib-ngx-mat-range-slider>
-            </label>
             <br /><br />
             <mat-divider></mat-divider>
             <br />
@@ -183,14 +177,41 @@
 
             <mat-form-field appearance="fill">
               <mat-label>Source</mat-label>
-              <input
-                #sourceInput
-                matInput
-                [formControl]="sourceControl"
-                [matAutocomplete]="auto3"
-                placeholder="Select source..."
-              />
-              <mat-autocomplete #auto3="matAutocomplete">
+
+              <mat-chip-list #chipList3 aria-label="Select Source Origin">
+                <mat-chip
+                  *ngFor="let source of selectedSources"
+                  (removed)="removeOption(source, selectedSources)"
+                >
+                  {{ source }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+                <br />
+                <br />
+                <input
+                  #sourceInput
+                  matInput
+                  [formControl]="sourceControl"
+                  [matAutocomplete]="auto3"
+                  [matChipInputFor]="chipList3"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addChip($event, selectedSources)"
+                  placeholder="Select source..."
+                />
+              </mat-chip-list>
+              <mat-autocomplete
+                #auto3="matAutocomplete"
+                (optionSelected)="
+                  selectOption(
+                    $event.option.value,
+                    selectedSources,
+                    sourceControl,
+                    sourceInput
+                  )
+                "
+              >
                 <mat-option *ngFor="let source of sources" [value]="source">
                   {{ source }}
                 </mat-option>
@@ -232,10 +253,6 @@
                 </mat-option>
               </mat-autocomplete>
             </mat-form-field>
-            <br />
-            <br />
-            <mat-divider></mat-divider>
-            <br />
           </li>
           <li>
             <h2><mat-icon>album</mat-icon> Sequence</h2>
@@ -279,6 +296,13 @@
             {{ nanobody.name }}
           </mat-panel-title>
           <mat-panel-description>
+            <button
+              *ngIf="nanobody.structure.pdb"
+              mat-button
+              (click)="openDialog(nanobody)"
+            >
+              PDB
+            </button>
             <a [href]="nanobody.reference.doi" target="_blank"
               ><mat-icon>open_in_new</mat-icon></a
             >

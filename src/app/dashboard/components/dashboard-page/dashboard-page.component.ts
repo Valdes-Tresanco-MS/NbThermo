@@ -13,7 +13,8 @@ import { DataService } from '../../services/data.service';
 import { Nanobody } from '../../models/nanobody';
 import { RangeType } from '../../../ngx-mat-range-slider/ngx-mat-range-slider.component';
 import { Histogram } from '../../helpers/histogram';
-import { CdkVirtualForOf } from '@angular/cdk/scrolling';
+import { MatDialog } from '@angular/material/dialog';
+import { PdbDialogComponent } from '../pdb-dialog/pdb-dialog.component';
 
 type Subset<K> = {
   [attr in keyof K]?: K[attr] extends object ? Subset<K[attr]> : K[attr];
@@ -27,6 +28,12 @@ type Subset<K> = {
 export class DashboardPageComponent implements OnInit {
   @ViewChild('antigenNameInput')
   antigenNameInput!: ElementRef<HTMLInputElement>;
+
+  @ViewChild('antigenTypeInput')
+  antigenTypeInput!: ElementRef<HTMLInputElement>;
+
+  @ViewChild('sourceInput')
+  sourceInput!: ElementRef<HTMLInputElement>;
 
   @ViewChild('chart')
   chartElement!: ElementRef<HTMLDivElement>;
@@ -51,14 +58,28 @@ export class DashboardPageComponent implements OnInit {
 
   selectedAntigens: string[] = [];
   selectedAntigenTypes: string[] = [];
+  selectedSources: string[] = [];
+  selectedTm: any;
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  panelOpenState = false;
+  tmOptions: any = [
+    { name: 'nanoDSF', value: 'nanoDSF' },
+    { name: 'DSF', value: 'dsf' },
+    { name: 'DSC', value: 'dsc' },
+    { name: 'Circular dichroism', value: 'circularDichroism' },
+    { name: 'Refolding', value: 'refolding' },
+    { name: 'Other', value: 'other' },
+  ];
+
   $data!: Observable<Nanobody[]>;
   data: Nanobody[] = [];
 
-  constructor(private dataService: DataService, private renderer: Renderer2) {}
+  constructor(
+    public dialog: MatDialog,
+    private dataService: DataService,
+    private renderer: Renderer2
+  ) {}
 
   ngOnInit(): void {
     this.$data = this.dataService.$data;
@@ -70,42 +91,6 @@ export class DashboardPageComponent implements OnInit {
     this.obtainingMethods = this.dataService.getOriginKeys('method');
   }
 
-  buildChart(nanobody: Nanobody) {
-    const nativeElement = this.chartElement.nativeElement;
-    this.svgElement = Histogram(
-      this.dataService.getTempratures(),
-      nativeElement.clientWidth,
-      nanobody.tm
-    );
-    this.renderer.appendChild(nativeElement, this.svgElement);
-  }
-
-  onChangeRange(range: RangeType, key: string, parent: keyof Nanobody) {
-    this.filterObject = {
-      ...this.filterObject,
-      [parent]: {
-        ...(this.filterObject[parent] as any),
-        [key]: range,
-      },
-    };
-    this._filter(this.filterObject);
-  }
-
-  onChangeBindingRange(range: RangeType, key: string) {
-    this.filterObject = {
-      ...this.filterObject,
-      binding: {
-        ...this.filterObject.binding,
-        antigens: [{ [key]: range }],
-      },
-    };
-    this._filter(this.filterObject);
-  }
-
-  private _filter(filter: Subset<Nanobody>) {
-    this.dataService.filterData(filter);
-  }
-
   addChip(event: MatChipInputEvent, target: string[]): void {
     console.log(event);
     const value = (event.value || '').trim();
@@ -115,32 +100,97 @@ export class DashboardPageComponent implements OnInit {
     //event.chipInput!.clear();
   }
 
-  selectAntigen(antigen: string) {
-    this.selectedAntigens.push(antigen);
-    this.antigenNameControl.setValue(null);
-    this.antigenNameInput.nativeElement.value = '';
-    this.antigenNameInput.nativeElement.blur();
+  buildChart(nanobody: any) {
+    const nativeElement = this.chartElement.nativeElement;
+    const { refolding, ...data } = nanobody.tm;
 
-    const {
-      binding,
-      binding: { antigens },
-    } = this.filterObject;
+    this.svgElement = Histogram(
+      this.dataService.getTempratures(),
+      nativeElement.clientWidth,
+      data
+    );
+  }
 
+  buildFilter() {
     this.filterObject = {
       ...this.filterObject,
       binding: {
-        ...binding,
-        antigens: [...antigens, { name: antigen }],
+        ...(this.selectedAntigens.length > 0 ||
+        this.selectedAntigenTypes.length > 0
+          ? {
+              antigens: [
+                ...this.selectedAntigens.map((i) => ({
+                  name: i,
+                })),
+                ...this.selectedAntigenTypes.map((i) => ({
+                  type: i,
+                })),
+              ],
+            }
+          : {}),
       },
+      ...(this.selectedSources.length > 0
+        ? {
+            origin: [
+              ...this.selectedSources.map((i) => ({
+                source: i,
+              })),
+            ],
+          }
+        : {}),
     };
-    this._filter(this.filterObject);
   }
 
-  removeAntigen(antigen: string): void {
-    const index = this.selectedAntigens.indexOf(antigen);
+  filter(filter: Subset<Nanobody>) {
+    this.dataService.filterData(filter);
+  }
+
+  onChangeRange(range: RangeType, key: string, parent: keyof Nanobody) {
+    this.filterObject = {
+      ...this.filterObject,
+      [parent]: {
+        [key]: range,
+      },
+    };
+    this.filter(this.filterObject);
+  }
+
+  openDialog(nanobody: any) {
+    this.loading = true;
+    const fileName = nanobody.structure.pdb.split(',')[0];
+    this.dataService
+      .getPDB(`/assets/${fileName.toLowerCase()}.pdb`)
+      .subscribe((pdb) => {
+        this.loading = false;
+        const dialogRef = this.dialog.open(PdbDialogComponent, {
+          data: { pdb },
+        });
+      });
+  }
+
+  removeOption(option: string, target: string[]): void {
+    const index = target.indexOf(option);
 
     if (index >= 0) {
-      this.selectedAntigens.splice(index, 1);
+      target.splice(index, 1);
     }
+
+    this.buildFilter();
+    this.filter(this.filterObject);
+  }
+
+  selectOption(
+    option: string,
+    target: string[],
+    control: FormControl,
+    input: any
+  ) {
+    target.push(option);
+    control.setValue(null);
+    input.value = '';
+    input.blur();
+
+    this.buildFilter();
+    this.filter(this.filterObject);
   }
 }
