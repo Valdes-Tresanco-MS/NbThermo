@@ -59,7 +59,14 @@
                   [matAutocomplete]="auto1"
                   [matChipInputFor]="chipList"
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  (matChipInputTokenEnd)="addChip($event, selectedAntigens)"
+                  (matChipInputTokenEnd)="
+                    selectOption(
+                      $event.value,
+                      selectedAntigens,
+                      antigenNameControl,
+                      antigenNameInput
+                    )
+                  "
                   placeholder="Select name..."
                 />
               </mat-chip-list>
@@ -105,7 +112,14 @@
                   [matAutocomplete]="auto2"
                   [matChipInputFor]="chipList2"
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  (matChipInputTokenEnd)="addChip($event, selectedAntigenTypes)"
+                  (matChipInputTokenEnd)="
+                    selectOption(
+                      $event.value,
+                      selectedAntigenTypes,
+                      antigenTypeControl,
+                      antigenTypeInput
+                    )
+                  "
                   placeholder="Select antigen type..."
                 />
               </mat-chip-list>
@@ -125,44 +139,27 @@
                 </mat-option>
               </mat-autocomplete>
             </mat-form-field>
-            <br /><br />
-            <mat-divider></mat-divider>
             <br />
           </li>
           <li>
             <h2><mat-icon>album</mat-icon> Yield (mg/L)</h2>
-            <label>
-              Periplasm <br /><br /><br />
+            <mat-form-field appearance="fill">
+              <mat-label>Select a measure</mat-label>
+              <mat-select name="yield" [(ngModel)]="selectedYield">
+                <mat-option
+                  *ngFor="let option of yieldOptions"
+                  [value]="option.value"
+                >
+                  {{ option.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <label *ngIf="selectedYield">
+              <br />
               <lib-ngx-mat-range-slider
                 [min]="0"
                 [max]="100"
-                (output)="onChangeRange($event, 'periplasm', 'yield')"
-              >
-              </lib-ngx-mat-range-slider>
-            </label>
-
-            <br />
-            <br />
-
-            <label>
-              Cytoplasm <br /><br /><br />
-              <lib-ngx-mat-range-slider
-                [min]="0"
-                [max]="100"
-                (output)="onChangeRange($event, 'cytoplasm', 'yield')"
-              >
-              </lib-ngx-mat-range-slider>
-            </label>
-
-            <br />
-            <br />
-
-            <label>
-              Other <br /><br /><br />
-              <lib-ngx-mat-range-slider
-                [min]="0"
-                [max]="100"
-                (output)="onChangeRange($event, 'other', 'yield')"
+                (output)="onChangeRange($event, selectedYield, 'yield')"
               >
               </lib-ngx-mat-range-slider>
             </label>
@@ -197,7 +194,14 @@
                   [matAutocomplete]="auto3"
                   [matChipInputFor]="chipList3"
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                  (matChipInputTokenEnd)="addChip($event, selectedSources)"
+                  (matChipInputTokenEnd)="
+                    selectOption(
+                      $event.value,
+                      selectedSources,
+                      sourceControl,
+                      sourceInput
+                    )
+                  "
                   placeholder="Select source..."
                 />
               </mat-chip-list>
@@ -220,14 +224,47 @@
             <br /><br />
             <mat-form-field appearance="fill">
               <mat-label>Type</mat-label>
-              <input
-                #typeInput
-                matInput
-                [formControl]="typeControl"
-                [matAutocomplete]="auto4"
-                placeholder="Select type..."
-              />
-              <mat-autocomplete #auto4="matAutocomplete">
+              <mat-chip-list #chipList4 aria-label="Select type">
+                <mat-chip
+                  *ngFor="let type of selectedOriginTypes"
+                  (removed)="removeOption(type, selectedOriginTypes)"
+                >
+                  {{ type }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+                <br />
+                <br />
+                <input
+                  #originTypeInput
+                  matInput
+                  [formControl]="originTypeControl"
+                  [matAutocomplete]="auto4"
+                  [matChipInputFor]="chipList4"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="
+                    selectOption(
+                      $event.value,
+                      selectedOriginTypes,
+                      originTypeControl,
+                      originTypeInput
+                    )
+                  "
+                  placeholder="Select type..."
+                />
+              </mat-chip-list>
+              <mat-autocomplete
+                #auto4="matAutocomplete"
+                (optionSelected)="
+                  selectOption(
+                    $event.option.value,
+                    selectedOriginTypes,
+                    originTypeControl,
+                    originTypeInput
+                  )
+                "
+              >
                 <mat-option *ngFor="let type of originTypes" [value]="type">
                   {{ type }}
                 </mat-option>
@@ -237,14 +274,47 @@
             <br />
             <mat-form-field appearance="fill">
               <mat-label>Obtaining Method</mat-label>
-              <input
-                #obtainingMethodInput
-                matInput
-                [formControl]="obtainingMethodControl"
-                [matAutocomplete]="auto5"
-                placeholder="Select method..."
-              />
-              <mat-autocomplete #auto5="matAutocomplete">
+              <mat-chip-list #chipList5 aria-label="Select method">
+                <mat-chip
+                  *ngFor="let type of selectedObtainingMethods"
+                  (removed)="removeOption(type, selectedObtainingMethods)"
+                >
+                  {{ type }}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+                <br />
+                <br />
+                <input
+                  #obtainingMethodInput
+                  matInput
+                  [formControl]="obtainingMethodControl"
+                  [matAutocomplete]="auto5"
+                  [matChipInputFor]="chipList5"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="
+                    selectOption(
+                      $event.value,
+                      selectedObtainingMethods,
+                      obtainingMethodControl,
+                      obtainingMethodInput
+                    )
+                  "
+                  placeholder="Select method..."
+                />
+              </mat-chip-list>
+              <mat-autocomplete
+                #auto5="matAutocomplete"
+                (optionSelected)="
+                  selectOption(
+                    $event.option.value,
+                    selectedObtainingMethods,
+                    obtainingMethodControl,
+                    obtainingMethodInput
+                  )
+                "
+              >
                 <mat-option
                   *ngFor="let method of obtainingMethods"
                   [value]="method"
@@ -259,21 +329,44 @@
 
             <mat-form-field appearance="fill">
               <mat-label>Raw</mat-label>
-              <input
-                #sequenceInput
-                matInput
-                [formControl]="sequenceControl"
-                [matAutocomplete]="auto6"
-                placeholder="Select sequence..."
-              />
-              <mat-autocomplete #auto6="matAutocomplete">
-                <mat-option
-                  *ngFor="let sequence of sequencies"
-                  [value]="sequence"
+
+              <mat-chip-list #chipList6 aria-label="Select sequence">
+                <mat-chip
+                  *ngFor="let sequence of selectedSequences"
+                  (removed)="removeOption(sequence, selectedSequences)"
                 >
                   {{ sequence }}
-                </mat-option>
-              </mat-autocomplete>
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip>
+                <br />
+                <br />
+                <input
+                  #sequenceInput
+                  matInput
+                  [formControl]="sequenceControl"
+                  [matChipInputFor]="chipList6"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (blur)="
+                    selectOption(
+                      sequenceInput.value,
+                      selectedSequences,
+                      sequenceControl,
+                      sequenceInput
+                    )
+                  "
+                  (matChipInputTokenEnd)="
+                    selectOption(
+                      $event.value,
+                      selectedSequences,
+                      sequenceControl,
+                      sequenceInput
+                    )
+                  "
+                  placeholder="Select sequence..."
+                />
+              </mat-chip-list>
             </mat-form-field>
             <br /><br />
           </li>

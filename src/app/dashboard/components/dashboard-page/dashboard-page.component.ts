@@ -35,6 +35,9 @@ export class DashboardPageComponent implements OnInit {
   @ViewChild('sourceInput')
   sourceInput!: ElementRef<HTMLInputElement>;
 
+  @ViewChild('originTypeInput')
+  originTypeInput!: ElementRef<HTMLInputElement>;
+
   @ViewChild('chart')
   chartElement!: ElementRef<HTMLDivElement>;
   svgElement: any;
@@ -53,13 +56,17 @@ export class DashboardPageComponent implements OnInit {
   antigenTypeControl = new FormControl();
   sequenceControl = new FormControl();
   sourceControl = new FormControl();
-  typeControl = new FormControl();
+  originTypeControl = new FormControl();
   obtainingMethodControl = new FormControl();
 
   selectedAntigens: string[] = [];
   selectedAntigenTypes: string[] = [];
   selectedSources: string[] = [];
+  selectedSequences: string[] = [];
+  selectedOriginTypes: string[] = [];
+  selectedObtainingMethods: string[] = [];
   selectedTm: any;
+  selectedYield: any;
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
@@ -69,6 +76,12 @@ export class DashboardPageComponent implements OnInit {
     { name: 'DSC', value: 'dsc' },
     { name: 'Circular dichroism', value: 'circularDichroism' },
     { name: 'Refolding', value: 'refolding' },
+    { name: 'Other', value: 'other' },
+  ];
+
+  yieldOptions: any = [
+    { name: 'Periplasm', value: 'periplasm' },
+    { name: 'Cytoplasm', value: 'cytoplasm' },
     { name: 'Other', value: 'other' },
   ];
 
@@ -91,15 +104,6 @@ export class DashboardPageComponent implements OnInit {
     this.obtainingMethods = this.dataService.getOriginKeys('method');
   }
 
-  addChip(event: MatChipInputEvent, target: string[]): void {
-    console.log(event);
-    const value = (event.value || '').trim();
-    if (value) {
-      target.push(value);
-    }
-    //event.chipInput!.clear();
-  }
-
   buildChart(nanobody: any) {
     const nativeElement = this.chartElement.nativeElement;
     const { refolding, ...data } = nanobody.tm;
@@ -114,10 +118,11 @@ export class DashboardPageComponent implements OnInit {
   buildFilter() {
     this.filterObject = {
       ...this.filterObject,
-      binding: {
-        ...(this.selectedAntigens.length > 0 ||
-        this.selectedAntigenTypes.length > 0
-          ? {
+
+      ...(this.selectedAntigens.length > 0 ||
+      this.selectedAntigenTypes.length > 0
+        ? {
+            binding: {
               antigens: [
                 ...this.selectedAntigens.map((i) => ({
                   name: i,
@@ -126,20 +131,46 @@ export class DashboardPageComponent implements OnInit {
                   type: i,
                 })),
               ],
-            }
-          : {}),
-      },
-      ...(this.selectedSources.length > 0
+            },
+          }
+        : { binding: undefined }),
+
+      ...(this.selectedSources.length > 0 ||
+      this.selectedOriginTypes.length > 0 ||
+      this.selectedObtainingMethods.length > 0
         ? {
             origin: [
               ...this.selectedSources.map((i) => ({
                 source: i,
               })),
+              ...this.selectedOriginTypes.map((i) => ({
+                type: i,
+              })),
+              ...this.selectedObtainingMethods.map((i) => ({
+                method: i,
+              })),
             ],
           }
-        : {}),
+        : { origin: undefined }),
+      ...(this.selectedSequences.length > 0
+        ? {
+            sequence: {
+              raw: [...this.selectedSequences.map((i) => i)],
+            },
+          }
+        : { sequence: undefined }),
     };
   }
+
+  // combineObjects([head: any, ...[headTail, ...tailTail]]): any {
+  //   if (!headTail) return head;
+
+  //   const combined: any = headTail.reduce((acc, x) => {
+  //     return acc.concat(head.map((h: any) => ({ ...h, ...x })));
+  //   }, []);
+
+  //   return this.combineObjects([combined, ...tailTail]);
+  // }
 
   filter(filter: Subset<Nanobody>) {
     this.dataService.filterData(filter);
@@ -185,12 +216,14 @@ export class DashboardPageComponent implements OnInit {
     control: FormControl,
     input: any
   ) {
-    target.push(option);
-    control.setValue(null);
-    input.value = '';
-    input.blur();
+    if (!!option) {
+      target.push(option);
+      control.setValue(null);
+      input.value = '';
+      input.blur();
 
-    this.buildFilter();
-    this.filter(this.filterObject);
+      this.buildFilter();
+      this.filter(this.filterObject);
+    }
   }
 }

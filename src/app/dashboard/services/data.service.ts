@@ -34,7 +34,7 @@ export class DataService {
     } else if (Array.isArray(item)) {
       return this.compareItemArray(item, filter, key);
     } else if (typeof filter === 'string') {
-      return item === filter;
+      return !!item?.match(new RegExp(filter)) || false;
     } else if (isInstanceOfRangeType(filter)) {
       return this.compareRange(item, filter);
     } else if (Array.isArray(filter)) {
@@ -110,10 +110,10 @@ export class DataService {
   }
 
   getTempratures() {
-    return this.database.data
-      .flatMap((item: Nanobody) => {
-        return Object.keys(item.tm).map((k) => item.tm[k as keyof Tm]);
-      })
-      .filter((i) => i);
+    return this.database.data.flatMap((item: Nanobody) => {
+      return Object.keys(item.tm)
+        .filter((k) => k !== 'refolding' && item.tm[k as keyof Tm])
+        .map((k) => item.tm[k as keyof Tm]);
+    });
   }
 }

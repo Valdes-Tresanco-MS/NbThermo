@@ -28,7 +28,7 @@ export function Histogram(data, _width, _markers) {
   var histogram = d3
     .bin()
     .domain(x.domain()) // then the domain of the graphic
-    .thresholds(x.ticks(10)); // then the numbers of bins
+    .thresholds(x.ticks(100 / 5)); // then the numbers of bins
 
   // And apply this function to data to get the bins
   var bins = histogram(data);
