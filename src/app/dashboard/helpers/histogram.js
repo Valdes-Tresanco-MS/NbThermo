@@ -25,7 +25,7 @@ export function Histogram(data, _width, _markers) {
   // get the data
   var x = d3
     .scaleLinear()
-    .domain([0, d3.max(data)])
+    .domain([d3.min(data), d3.max(data)])
     .range([0, width]);
   svg
     .append("g")
@@ -100,7 +100,7 @@ export function Histogram(data, _width, _markers) {
       svg
         .append("text")
         .attr("x", x(_markers[k] + 1))
-        .attr("y", y(20 * (index + 1)))
+        .attr("y", y(7 * (index + 1)))
         .text(`${k}: ${_markers[k]}`)
         .style("font-size", "15px");
 
