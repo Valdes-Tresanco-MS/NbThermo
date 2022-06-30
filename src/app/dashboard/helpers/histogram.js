@@ -9,8 +9,16 @@ export function Histogram(data, _width, _markers) {
   var svg = d3
     .select(".my_dataviz")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
+    // .attr("width", width + margin.left + margin.right)
+    // .attr("height", height + margin.top + margin.bottom)
+    .attr('preserveAspectRatio', 'xMinYMin meet')
+    .attr(
+      'viewBox',
+      '0 0 ' +
+      (width + margin.left + margin.right) +
+      ' ' +
+      (height + margin.top + margin.bottom)
+    )
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
