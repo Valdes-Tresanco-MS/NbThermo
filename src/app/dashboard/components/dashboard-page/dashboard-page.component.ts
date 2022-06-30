@@ -71,12 +71,12 @@ export class DashboardPageComponent implements OnInit {
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
   tmOptions: any = [
-    { name: 'nanoDSF', value: 'nanoDSF' },
-    { name: 'DSF', value: 'dsf' },
-    { name: 'DSC', value: 'dsc' },
-    { name: 'Circular dichroism', value: 'circularDichroism' },
-    { name: 'Refolding', value: 'refolding' },
-    { name: 'Other', value: 'other' },
+    { name: 'nanoDSF', value: 'nanoDSF', title: 'Nano Differential Scanning Fluorimetry'},
+    { name: 'DSF', value: 'dsf', title: 'Differential Scanning Fluorimetry'},
+    { name: 'DSC', value: 'dsc', title: 'Differential Scanning Calorimetry'},
+    { name: 'Circular dichroism', value: 'circularDichroism', title: 'Circular Dichroism'},
+    { name: 'Refolding', value: 'refolding', title: 'Refolding from Circular Dichroism experiments'},
+    { name: 'Other', value: 'other', title: 'Other experimental method not mentioned above'},
   ];
 
   yieldOptions: any = [

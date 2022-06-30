@@ -6,13 +6,14 @@
       <form>
         <ul>
           <li>
-            <h2><mat-icon>album</mat-icon> Tm</h2>
+            <h2 title="Melting Temperature (Tm)"><mat-icon>album</mat-icon> Tm (°C)</h2>
             <mat-form-field appearance="fill">
               <mat-label>Select a measure</mat-label>
               <mat-select name="tm" [(ngModel)]="selectedTm">
                 <mat-option
                   *ngFor="let option of tmOptions"
                   [value]="option.value"
+                  [title]="option.title"
                 >
                   {{ option.name }}
                 </mat-option>
@@ -142,7 +143,7 @@
             <br />
           </li>
           <li>
-            <h2><mat-icon>album</mat-icon> Yield (mg/L)</h2>
+            <h2 title="Cellular yield in mg/L"><mat-icon>album</mat-icon> Yield (mg/L)</h2>
             <mat-form-field appearance="fill">
               <mat-label>Select a measure</mat-label>
               <mat-select name="yield" [(ngModel)]="selectedYield">
@@ -172,7 +173,7 @@
           <li>
             <h2><mat-icon>album</mat-icon> Origin</h2>
 
-            <mat-form-field appearance="fill">
+            <mat-form-field appearance="fill" title="Common organism name. Include Synthetic and Unknown">
               <mat-label>Source</mat-label>
 
               <mat-chip-list #chipList3 aria-label="Select Source Origin">
@@ -222,7 +223,7 @@
               </mat-autocomplete>
             </mat-form-field>
             <br /><br />
-            <mat-form-field appearance="fill">
+            <mat-form-field appearance="fill" title="If is natural, fully synthetic, or semi-synthetic">
               <mat-label>Type</mat-label>
               <mat-chip-list #chipList4 aria-label="Select type">
                 <mat-chip
@@ -272,7 +273,7 @@
             </mat-form-field>
             <br />
             <br />
-            <mat-form-field appearance="fill">
+            <mat-form-field appearance="fill" title="Comprises immunization, naïve, point mutation, or other forms of modification.">
               <mat-label>Obtaining Method</mat-label>
               <mat-chip-list #chipList5 aria-label="Select method">
                 <mat-chip
@@ -327,7 +328,7 @@
           <li>
             <h2><mat-icon>album</mat-icon> Sequence</h2>
 
-            <mat-form-field appearance="fill">
+            <mat-form-field appearance="fill" title="Original reported sequence">
               <mat-label>Raw</mat-label>
 
               <mat-chip-list #chipList6 aria-label="Select sequence">
@@ -405,15 +406,15 @@
           <section class="info">
             <table class="mat-elevation-z1">
               <tr>
-                <th colspan="6"><h3>Tm</h3></th>
+                <th colspan="6"><h3 title="Melting Temperature">Tm (°C)</h3></th>
               </tr>
               <tr>
-                <th>nanoDSF</th>
-                <th>DSF</th>
-                <th>DSC</th>
-                <th>Circular Dichroism</th>
-                <th>Refolding</th>
-                <th>Other</th>
+                <th title="Nano Differential Scanning Fluorimetry">nanoDSF</th>
+                <th title="Differential Scanning Fluorimetry">DSF</th>
+                <th title="Differential Scanning Calorimetry">DSC</th>
+                <th title="Circular Dichroism">Circular Dichroism</th>
+                <th title="Refolding from Circular Dichroism experiments">Refolding (%)</th>
+                <th title="Other experimental method not mentioned above">Other</th>
               </tr>
               <tr>
                 <td>{{ nanobody.tm.nanoDSF }}</td>
@@ -447,9 +448,9 @@
                 <th colspan="3"><h3>Origin</h3></th>
               </tr>
               <tr>
-                <th>Source</th>
-                <th>Type</th>
-                <th>Method</th>
+                <th title="Common organism name. Include Synthetic and Unknown">Source</th>
+                <th title="If is natural, fully synthetic, or semi-synthetic">Type</th>
+                <th title="Comprises immunization, naïve, point mutation, or other forms of modification.">Method</th>
               </tr>
               <tr>
                 <td>{{ nanobody.origin.source }}</td>
@@ -462,12 +463,12 @@
               *ngIf="nanobody.yield.periplasm || nanobody.yield.cytoplasm"
             >
               <tr>
-                <th colspan="3"><h3>Yield</h3></th>
+                <th colspan="3"><h3 title="Cellular yield">Yield (mg/L)</h3></th>
               </tr>
               <tr>
                 <th>Periplasm</th>
                 <th>Cytoplasm</th>
-                <th>Other</th>
+                <th title="Other cellular compartment or Unknown">Other</th>
               </tr>
               <tr>
                 <td>{{ nanobody.yield.periplasm }}</td>
@@ -486,7 +487,7 @@
               *ngIf="nanobody.sequence.raw"
             >
               <tr>
-                <th><h3>Sequence - Raw</h3></th>
+                <th><h3 title="Original reported sequence">Sequence - Raw</h3></th>
               </tr>
               <tr>
                 <td>{{ nanobody.sequence.raw }}</td>
@@ -495,7 +496,7 @@
 
             <table class="mat-elevation-z1 full-width">
               <tr>
-                <th><h3>Sequence - Aho</h3></th>
+                <th><h3 title="Sequence numbered according to Aho scheme">Sequence - Aho</h3></th>
               </tr>
               <tr>
                 <td>{{ nanobody.sequence.aho }}</td>
@@ -504,7 +505,8 @@
 
             <table class="mat-elevation-z1 full-width">
               <tr>
-                <th colspan="2"><h3>Sequence - Frameworks</h3></th>
+                <th colspan="2"><h3 title="Sequences of frameworks. These sequences may not coincide with the genetic
+                scheme, since we have included several residues as part of the CDRs.">Sequence - Frameworks</h3></th>
               </tr>
               <tr>
                 <td>Framework 1</td>
@@ -526,7 +528,8 @@
 
             <table class="mat-elevation-z1 full-width">
               <tr>
-                <th colspan="3"><h3>Sequence - CDRs</h3></th>
+                <th colspan="3"><h3 title="Sequences of CDRs. These sequences may not coincide with the genetic
+                scheme, since we have included several original frameworks residues as part of the CDRs.">Sequence - CDRs</h3></th>
               </tr>
               <tr>
                 <th>Number</th>
